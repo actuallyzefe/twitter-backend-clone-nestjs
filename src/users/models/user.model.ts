@@ -25,9 +25,6 @@ export class User {
   @Prop({ select: false })
   password: string;
 
-  @Prop()
-  passwordConfirm: string;
-
   @Prop({ default: 'default.jpg' })
   avatar: string;
 
