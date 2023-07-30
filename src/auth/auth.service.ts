@@ -36,12 +36,11 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto) {
-    const user = await this.userHelperService.findOne({
-      email: loginDto.email,
-    });
+    const { email, password } = loginDto;
+    const user = await this.userHelperService.findOneSelectPassword({ email });
     if (!user) throw new UnauthorizedException();
 
-    const passwordTrue = await bcrypt.compare(loginDto.password, user.password);
+    const passwordTrue = await bcrypt.compare(password, user.password);
     if (!passwordTrue) throw new UnauthorizedException();
 
     return this.jwtResponse(user);

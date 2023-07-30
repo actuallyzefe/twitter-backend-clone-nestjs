@@ -1,5 +1,5 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument, ObjectId, Types } from 'mongoose';
 
 export enum Roles {
   user = 'user',
@@ -32,10 +32,10 @@ export class User {
   bio: string;
 
   @Prop({ ref: 'User', default: [] })
-  followers: string[];
+  followers: Types.ObjectId[];
 
   @Prop({ ref: 'User', default: [] })
-  followings: string[];
+  followings: Types.ObjectId[];
 }
 
 export type UserDocument = HydratedDocument<User>;
