@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model } from 'mongoose';
+import { FilterQuery, Model, UpdateQuery } from 'mongoose';
 import { Tweet, TweetDocument } from 'src/tweets/models/tweets.model';
 
 @Injectable()
@@ -17,5 +17,13 @@ export class TweetsHelperService {
 
   async create(registerDto: Partial<Tweet>): Promise<TweetDocument> {
     return this.tweetModel.create(registerDto);
+  }
+  async updateOne(
+    userId: string,
+    updateFields: UpdateQuery<Tweet>,
+  ): Promise<TweetDocument> {
+    return this.tweetModel.findByIdAndUpdate(userId, updateFields, {
+      new: true,
+    });
   }
 }

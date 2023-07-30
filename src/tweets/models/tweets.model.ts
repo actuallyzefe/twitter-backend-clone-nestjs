@@ -9,7 +9,7 @@ export class Tweet {
   tweet: string;
 
   @Prop({ default: [] })
-  likes: [];
+  likes: Types.ObjectId[];
 
   @Prop({ required: false, type: String })
   media?: string;

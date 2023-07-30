@@ -2,6 +2,8 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Param,
+  Patch,
   Post,
   Req,
   UploadedFile,
@@ -27,5 +29,13 @@ export class TweetsController {
     @UploadedFile() file?: Express.Multer.File,
   ) {
     return this.tweetsService.postTweet(request.user, tweet, file);
+  }
+
+  @Patch('like-dislike/:tweetid')
+  async likeDislike(
+    @Req() request: Request,
+    @Param('tweetid') tweetId: string,
+  ) {
+    return this.tweetsService.likeDislikeTweet(request.user, tweetId);
   }
 }
