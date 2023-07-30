@@ -3,8 +3,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { UserHelperService } from 'src/utils/users-helper.service';
 import { UserDocument } from './models/user.model';
+import { UserHelperService } from 'src/utils/users/users-helper.service';
 
 @Injectable()
 export class UsersService {

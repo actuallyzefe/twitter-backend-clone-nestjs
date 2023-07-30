@@ -6,7 +6,8 @@ import { AwsModule } from './aws/aws.module';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UserhelperModule } from './utils/user-helper.module';
+import { UserhelperModule } from './utils/users/user-helper.module';
+import { TweetsHelperModule } from './utils/tweets/tweets-helper.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { UserhelperModule } from './utils/user-helper.module';
     }),
     UserhelperModule,
     MongooseModule.forRoot(process.env.MONGODB_URI),
+    TweetsHelperModule,
   ],
 })
 export class AppModule {}
