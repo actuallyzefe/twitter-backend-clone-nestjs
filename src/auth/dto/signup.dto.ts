@@ -26,8 +26,4 @@ export class SignupDto {
 
   @IsOptional()
   avatar?: string;
-
-  followers: [];
-
-  followings: [];
 }
