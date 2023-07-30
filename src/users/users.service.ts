@@ -14,11 +14,11 @@ export class UsersService {
     return user;
   }
 
-  async followUnFollowLogic(userId: string, user2: UserDocument) {
+  async followUnFollowLogic(userId: string, currentUser: UserDocument) {
     const otherUser = await this.userHelperService.findById(userId);
-    const user2id = user2._id.toString();
+    const currentUserId = currentUser._id.toString();
 
-    if (user2id === userId) {
+    if (currentUserId === userId) {
       throw new BadRequestException('You cannot follow yourself');
     }
     try {
@@ -26,21 +26,21 @@ export class UsersService {
         throw new NotFoundException();
       }
 
-      if (!otherUser.followers?.includes(user2._id)) {
-        await this.userHelperService.updateOne(user2id, {
+      if (!otherUser.followers?.includes(currentUser._id)) {
+        await this.userHelperService.updateOne(currentUserId, {
           $push: {
             followings: userId,
           },
         });
 
         await otherUser.updateOne({
-          $push: { followers: user2._id },
+          $push: { followers: currentUser._id },
         });
         const msg = `${otherUser.id} followed`;
         return { status: 'Success', msg };
       }
 
-      await this.userHelperService.updateOne(user2id, {
+      await this.userHelperService.updateOne(currentUserId, {
         $pull: {
           followings: otherUser.id,
         },
@@ -48,7 +48,7 @@ export class UsersService {
 
       await otherUser.updateOne({
         $pull: {
-          followers: user2._id,
+          followers: currentUser._id,
         },
       });
 
