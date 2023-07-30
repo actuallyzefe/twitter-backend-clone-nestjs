@@ -19,6 +19,10 @@ export class UserHelperService {
     return this.userModel.findById(id);
   }
 
+  async findAll() {
+    return this.userModel.find();
+  }
+
   async create(registerDto: Partial<User>): Promise<UserDocument> {
     return this.userModel.create(registerDto);
   }

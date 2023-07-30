@@ -1,5 +1,5 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument, ObjectId, Types } from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
 
 export enum Roles {
   user = 'user',
@@ -8,6 +8,9 @@ export enum Roles {
 
 @Schema({
   timestamps: true,
+  toJSON: {
+    virtuals: true,
+  },
 })
 export class User {
   @Prop()
@@ -32,10 +35,25 @@ export class User {
   bio: string;
 
   @Prop({ ref: 'User', default: [] })
-  followers: Types.ObjectId[];
+  followers: mongoose.Schema.Types.ObjectId[];
 
   @Prop({ ref: 'User', default: [] })
-  followings: Types.ObjectId[];
+  followings: mongoose.Schema.Types.ObjectId[];
+
+  @Prop({ default: [] })
+  tweets: mongoose.Schema.Types.ObjectId[];
+
+  @Prop({ type: Boolean, required: true })
+  status: Boolean;
+
+  @Prop({ type: Number })
+  verifyCode: number;
+
+  @Prop({ type: Date })
+  verifyCodeExpiresAt: Date;
+
+  @Prop({ type: Number })
+  passwordVerifyCode: number;
 }
 
 export type UserDocument = HydratedDocument<User>;

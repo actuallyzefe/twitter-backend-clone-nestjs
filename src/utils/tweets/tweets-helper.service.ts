@@ -19,10 +19,10 @@ export class TweetsHelperService {
     return this.tweetModel.create(registerDto);
   }
   async updateOne(
-    userId: string,
+    tweetId: string,
     updateFields: UpdateQuery<Tweet>,
   ): Promise<TweetDocument> {
-    return this.tweetModel.findByIdAndUpdate(userId, updateFields, {
+    return this.tweetModel.findByIdAndUpdate(tweetId, updateFields, {
       new: true,
     });
   }

@@ -5,13 +5,22 @@ import {
 } from '@nestjs/common';
 import { UserDocument } from './models/user.model';
 import { UserHelperService } from 'src/utils/users/users-helper.service';
+import { AwsService } from 'src/aws/aws.service';
+import { UpdateFieldsDto } from './dto/update-fields.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(private userHelperService: UserHelperService) {}
+  constructor(
+    private userHelperService: UserHelperService,
+    private readonly awsService: AwsService,
+  ) {}
 
   async getMe(user: UserDocument) {
     return user;
+  }
+
+  async findAllUsers() {
+    return this.userHelperService.findAll();
   }
 
   async followUnFollowLogic(userId: string, currentUser: UserDocument) {
@@ -26,7 +35,7 @@ export class UsersService {
         throw new NotFoundException();
       }
 
-      if (!otherUser.followers?.includes(currentUser._id)) {
+      if (!otherUser.followers?.includes(currentUser.id)) {
         await this.userHelperService.updateOne(currentUserId, {
           $push: {
             followings: userId,
@@ -34,7 +43,7 @@ export class UsersService {
         });
 
         await otherUser.updateOne({
-          $push: { followers: currentUser._id },
+          $push: { followers: currentUser.id },
         });
         const msg = `${otherUser.id} followed`;
         return { status: 'Success', msg };
@@ -48,7 +57,7 @@ export class UsersService {
 
       await otherUser.updateOne({
         $pull: {
-          followers: currentUser._id,
+          followers: currentUser.id,
         },
       });
 
@@ -59,5 +68,26 @@ export class UsersService {
 
       return e;
     }
+  }
+
+  async updateMe(
+    currentUseruser: UserDocument,
+    updateFields?: UpdateFieldsDto,
+    file?: Express.Multer.File,
+  ) {
+    if (file) {
+      await this.awsService.upload(file.originalname, file.buffer);
+      await this.userHelperService.updateOne(currentUseruser.id, {
+        $set: {
+          avatar: file.originalname,
+        },
+      });
+    }
+    await this.userHelperService.updateOne(currentUseruser.id, {
+      $set: {
+        ...updateFields,
+      },
+    });
+    return { msg: 'User Updated' };
   }
 }

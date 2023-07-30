@@ -1,15 +1,18 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import mongoose, { HydratedDocument, Types } from 'mongoose';
 
 @Schema({
   timestamps: true,
+  toJSON: {
+    virtuals: true,
+  },
 })
 export class Tweet {
   @Prop({ type: String, required: false })
   tweet: string;
 
   @Prop({ default: [] })
-  likes: Types.ObjectId[];
+  likes: mongoose.Schema.Types.ObjectId[];
 
   @Prop({ required: false, type: String })
   media?: string;
@@ -19,14 +22,11 @@ export class Tweet {
 
   @Prop({
     ref: 'User',
-    type: Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
   })
-  tweetBy: Types.ObjectId;
+  tweetBy: mongoose.Schema.Types.ObjectId;
 }
 
 export type TweetDocument = HydratedDocument<Tweet>;
 export const TweetSchema = SchemaFactory.createForClass(Tweet);
-
-TweetSchema.set('toObject', { virtuals: true });
-TweetSchema.set('toJSON', { virtuals: true });

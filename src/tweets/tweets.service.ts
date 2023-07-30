@@ -7,11 +7,13 @@ import { TweetsHelperService } from 'src/utils/tweets/tweets-helper.service';
 import { PostTweetDto } from './dto/post-tweet.dto';
 import { UserDocument } from 'src/users/models/user.model';
 import { AwsService } from 'src/aws/aws.service';
+import { UserHelperService } from 'src/utils/users/users-helper.service';
 
 @Injectable()
 export class TweetsService {
   constructor(
     private readonly tweetsHelperService: TweetsHelperService,
+    private readonly userHelperService: UserHelperService,
     private readonly awsService: AwsService,
   ) {}
 
@@ -20,6 +22,8 @@ export class TweetsService {
     tweetCredentials?: PostTweetDto,
     file?: Express.Multer.File,
   ) {
+    const currentUserId = currentUser._id.toString();
+
     if (!tweetCredentials.tweet && !file) throw new BadRequestException();
 
     if (file) {
@@ -29,8 +33,13 @@ export class TweetsService {
     const tweet = await this.tweetsHelperService.create({
       ...tweetCredentials,
       media: file?.originalname,
-      tweetBy: currentUser._id,
+      tweetBy: currentUser.id,
     });
+
+    await this.userHelperService.updateOne(currentUserId, {
+      $push: { tweets: tweet._id },
+    });
+
     return tweet;
   }
 
@@ -45,16 +54,18 @@ export class TweetsService {
       throw new NotFoundException();
     }
 
-    if (!tweet.likes.includes(user._id)) {
-      console.log(tweet.likes);
-      console.log(tweet);
-      await tweet.updateOne({ $push: { likes: user._id } });
+    if (!tweet.likes.includes(user.id)) {
+      await this.tweetsHelperService.updateOne(tweet.id, {
+        $push: { likes: user._id },
+      });
+
       return { status: 'Success', msg: 'Tweet Liked' };
     }
 
     await tweet.updateOne({ $pull: { likes: user._id } });
+
     return { status: 'Success', msg: 'Tweet Disliked' };
   }
-  async retweet() {}
+
   async deleteTweet() {}
 }
