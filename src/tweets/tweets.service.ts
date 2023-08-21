@@ -43,10 +43,6 @@ export class TweetsService {
     return tweet;
   }
 
-  private async uploadMedia(fileName: string, file: Buffer) {
-    return this.awsService.upload(fileName, file);
-  }
-
   async likeDislikeTweet(user: UserDocument, id: string) {
     const tweet = await this.tweetsHelperService.findById(id);
 
@@ -65,6 +61,10 @@ export class TweetsService {
     await tweet.updateOne({ $pull: { likes: user._id } });
 
     return { status: 'Success', msg: 'Tweet Disliked' };
+  }
+
+  private async uploadMedia(fileName: string, file: Buffer) {
+    return this.awsService.upload(fileName, file);
   }
 
   async deleteTweet() {}
