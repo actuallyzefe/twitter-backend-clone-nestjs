@@ -9,8 +9,10 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class AwsService {
   private readonly s3Client: S3Client;
+  private readonly bucket: string;
 
   constructor(private readonly configService: ConfigService) {
+    this.bucket = this.configService.get<string>('AWS_S3_BUCKET');
     this.s3Client = new S3Client({
       region: this.configService.get<string>('AWS_S3_REGION'),
       credentials: {
@@ -23,7 +25,7 @@ export class AwsService {
   async upload(fileName: string, file: Buffer) {
     await this.s3Client.send(
       new PutObjectCommand({
-        Bucket: this.configService.get<string>('AWS_S3_BUCKET'),
+        Bucket: this.bucket,
         Key: fileName,
         Body: file,
       }),
@@ -35,7 +37,7 @@ export class AwsService {
     try {
       const response = await this.s3Client.send(
         new GetObjectCommand({
-          Bucket: this.configService.get<string>('AWS_S3_BUCKET'),
+          Bucket: this.bucket,
           Key: fileName,
         }),
       );
